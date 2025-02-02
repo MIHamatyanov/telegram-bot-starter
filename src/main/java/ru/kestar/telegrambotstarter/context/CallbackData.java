@@ -1,7 +1,5 @@
 package ru.kestar.telegrambotstarter.context;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,9 +9,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CallbackData {
 
-    @JsonProperty("action")
     private String action;
 
-    @JsonProperty("data")
-    private Map<String, String> data;
+    private Integer messageId;
+
+    private String data;
+
+    public CallbackData(String action) {
+        this.action = action;
+    }
+
+    public CallbackData(String action, String data) {
+        this(action);
+        this.data = data;
+    }
 }

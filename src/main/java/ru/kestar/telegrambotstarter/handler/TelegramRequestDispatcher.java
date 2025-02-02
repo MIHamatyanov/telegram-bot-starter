@@ -62,10 +62,10 @@ public class TelegramRequestDispatcher {
     private Optional<BotApiMethod<?>> dispatchCallback(TelegramActionContext context) {
         final CallbackQuery callbackQuery = context.getUpdate().getCallbackQuery();
         final CallbackData callbackData = callbackDataParser.fromString(callbackQuery.getData());
+        callbackData.setMessageId(callbackQuery.getMessage().getMessageId());
         context.setCallbackData(callbackData);
-        context.setCallbackMessageId(callbackQuery.getMessage().getMessageId());
 
-        if (callbackData != null && callbackData.getAction() != null && callbackHandlers.containsKey(callbackData.getAction())) {
+        if (callbackData.getAction() != null && callbackHandlers.containsKey(callbackData.getAction())) {
             return callbackHandlers.get(callbackData.getAction()).handle(context);
         }
         throw new UnknownBotCommandException();
