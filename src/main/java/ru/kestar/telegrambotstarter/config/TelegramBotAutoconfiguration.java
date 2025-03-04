@@ -15,6 +15,7 @@ import ru.kestar.telegrambotstarter.config.properties.TelegramBotProperties;
 import ru.kestar.telegrambotstarter.context.CallbackDataParser;
 import ru.kestar.telegrambotstarter.exception.handler.DefaultErrorHandler;
 import ru.kestar.telegrambotstarter.exception.handler.ErrorHandler;
+import ru.kestar.telegrambotstarter.handler.DefaultMessageHandler;
 import ru.kestar.telegrambotstarter.handler.TelegramHandlersRegisterer;
 import ru.kestar.telegrambotstarter.handler.TelegramRequestDispatcher;
 import ru.kestar.telegrambotstarter.handler.UpdateHandler;
@@ -32,8 +33,9 @@ public class TelegramBotAutoconfiguration {
 
     @Bean
     public TelegramRequestDispatcher telegramRequestDispatcher(ErrorHandler errorHandler,
-                                                               CallbackDataParser callbackDataParser) {
-        return new TelegramRequestDispatcher(errorHandler, callbackDataParser);
+                                                               CallbackDataParser callbackDataParser,
+                                                               DefaultMessageHandler defaultMessageHandler) {
+        return new TelegramRequestDispatcher(errorHandler, callbackDataParser, defaultMessageHandler);
     }
 
     @Bean
@@ -59,5 +61,11 @@ public class TelegramBotAutoconfiguration {
     @Bean
     public CallbackDataParser callbackDataParser() {
         return new CallbackDataParser();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultMessageHandler defaultMessageHandler() {
+        return new DefaultMessageHandler();
     }
 }

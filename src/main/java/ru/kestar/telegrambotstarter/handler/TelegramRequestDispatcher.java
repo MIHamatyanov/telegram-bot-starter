@@ -12,7 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.kestar.telegrambotstarter.context.CallbackData;
 import ru.kestar.telegrambotstarter.context.CallbackDataParser;
 import ru.kestar.telegrambotstarter.context.TelegramActionContext;
-import ru.kestar.telegrambotstarter.exception.UnknownBotCommandException;
 import ru.kestar.telegrambotstarter.exception.handler.ErrorHandler;
 
 @Slf4j
@@ -23,6 +22,7 @@ public class TelegramRequestDispatcher {
 
     private final Map<String, UpdateHandler> commandHandlers = new HashMap<>();
     private final Map<String, UpdateHandler> callbackHandlers = new HashMap<>();
+    private final DefaultMessageHandler defaultMessageHandler;
 
     public void registerCommandHandler(String command, UpdateHandler handler) {
         commandHandlers.put(command, handler);
@@ -42,7 +42,7 @@ public class TelegramRequestDispatcher {
                 return dispatchCallback(context);
             }
 
-            throw new UnknownBotCommandException();
+            return handleDefault(context);
         } catch (Exception e) {
             return errorHandler.handle(context, e);
         }
@@ -56,7 +56,7 @@ public class TelegramRequestDispatcher {
                 return commandHandlers.get(command).handle(context);
             }
         }
-        throw new UnknownBotCommandException();
+        return handleDefault(context);
     }
 
     private Optional<BotApiMethod<?>> dispatchCallback(TelegramActionContext context) {
@@ -68,6 +68,10 @@ public class TelegramRequestDispatcher {
         if (callbackData.getAction() != null && callbackHandlers.containsKey(callbackData.getAction())) {
             return callbackHandlers.get(callbackData.getAction()).handle(context);
         }
-        throw new UnknownBotCommandException();
+        return handleDefault(context);
+    }
+
+    private Optional<BotApiMethod<?>> handleDefault(TelegramActionContext context) {
+        return defaultMessageHandler.handle(context);
     }
 }

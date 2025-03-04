@@ -4,6 +4,7 @@ import java.util.Optional;
 import lombok.Data;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 
 @Data
 public class TelegramActionContext {
@@ -26,5 +27,15 @@ public class TelegramActionContext {
             .map(Message::getChatId)
             .map(Object::toString)
             .orElse("");
+    }
+
+    public User getUser() {
+        User user = null;
+        if (update.hasCallbackQuery()) {
+            user = update.getCallbackQuery().getFrom();
+        } else if (update.hasMessage()) {
+            user = update.getMessage().getFrom();
+        }
+        return user;
     }
 }
